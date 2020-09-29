@@ -1,6 +1,7 @@
 # don't upload wave files and pretrained models
 *.wav
 *.pt
+*.py[co]
 *data-00000-of-00001
 synthesizer/saved_models/logs-pretrained/taco_pretrained/tacotron_model.ckpt-278000.data-00000-of-00001
 synthesizer/saved_models/*
