@@ -1,4 +1,4 @@
-# Rootslab at lunch Demo: Real-Time Voice Cloning
+# Streamlit Demo: Real-Time Voice Cloning
 
 This repository demonstrates how a simple voice transfer app can be created using [Streamlit](https://www.streamlit.io/). The code for this demo is based on the repository for [Real-Time-Voice-Cloning](https://github.com/CorentinJ/Real-Time-Voice-Cloning).
 
