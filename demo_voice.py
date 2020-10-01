@@ -28,24 +28,29 @@ vocoder.load_model(voc_model_fpath)
 
 model_load_state.text("Loaded pretrained models!")
 
-"## 1. Record your own voice"
+st.header("1. Record your own voice")
 
+filename = st.text_input("Choose a filename: ")
 
-if st.button("Click to Record"):
-    record_state = st.text("Recording...")
-    duration = 5  # seconds
-    fs = 48000
-    myrecording = record(duration, fs)
-    record_state.text("Saving sample as myvoice.mp3")
+if st.button(f"Click to Record"):
+    if filename == "":
+        st.warning("Choose a filename.")
+    else:
+        record_state = st.text("Recording...")
+        duration = 5  # seconds
+        fs = 48000
+        myrecording = record(duration, fs)
+        record_state.text(f"Saving sample as {filename}.mp3")
 
-    path_myrecording = "./samples/myvoice.mp3"
-    save_record(path_myrecording, myrecording, fs)
+        path_myrecording = f"./samples/{filename}.mp3"
 
-    st.audio(read_audio(path_myrecording))
-    record_state.text("Done! Saved sample as myvoice.mp3")
+        save_record(path_myrecording, myrecording, fs)
+        record_state.text(f"Done! Saved sample as {filename}.mp3")
 
-    fig = create_spectrogram(path_myrecording)
-    st.pyplot(fig)
+        st.audio(read_audio(path_myrecording))
+
+        fig = create_spectrogram(path_myrecording)
+        st.pyplot(fig)
 
 "## 2. Choose an audio record"
 
@@ -99,5 +104,4 @@ if st.button("Click to synthesize"):
     sf.write(filename, generated_wav.astype(np.float32), synthesizer.sample_rate)
     num_generated += 1
     synthesize_state.text("\nSaved output as %s\n\n" % filename)
-
     st.audio(read_audio(filename))
