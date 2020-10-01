@@ -68,6 +68,16 @@ if selected_filename is not None:
 
     st.audio(read_audio(in_fpath))
 
+    if st.sidebar.checkbox("Do you want to change your embedding?"):
+        height = int(np.sqrt(len(embed)))
+        shape = (height, -1)
+        matrix_embed = np.round(embed, 2).reshape(shape)
+        matrix_embed = [list(row) for row in matrix_embed]
+        a = st.text_area("Change your embedding:", value=str(matrix_embed).replace("],", "],\n"))
+
+        matrix = [[float(x) for x in row.strip("[] \n").split(",")] for row in a.split("],")]
+        embed = np.array(matrix).flatten()
+
     fig = draw_embed(embed, "myembedding", None)
     st.pyplot(fig)
 
