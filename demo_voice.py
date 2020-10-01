@@ -71,7 +71,9 @@ if selected_filename is not None:
 
 
 "## 3. Synthesize text."
-text = st.text_input("Write a sentence (+-20 words) to be synthesized:")
+text = ""
+if st.checkbox("Write a sentence for synthesis?"):
+    text = st.text_input("Write a sentence (+-20 words) to be synthesized:")
 
 # The synthesizer works in batch, so you need to put your data
 # in a list or numpy array
