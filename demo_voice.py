@@ -7,11 +7,8 @@ import numpy as np
 import soundfile as sf
 import os
 import librosa
-import sounddevice as sd
-import wavio
 import glob
 from helper import draw_embed, create_spectrogram, read_audio, record, save_record
-
 
 "# Streamlit showcase"
 
@@ -71,28 +68,36 @@ if selected_filename is not None:
 
 
 "## 3. Synthesize text."
-text = ""
-if st.checkbox("Write a sentence for synthesis?"):
-    text = st.text_input("Write a sentence (+-20 words) to be synthesized:")
+text = st.text_input("Write a sentence (+-20 words) to be synthesized:")
 
-# The synthesizer works in batch, so you need to put your data
-# in a list or numpy array
-if text != "":
+
+def pgbar(i, seq_len, b_size, gen_rate):
+    mybar.progress(i / seq_len)
+
+
+if st.button("Click to synthesize"):
     texts = [text]
     embeds = [embed]
-    
+
     # generate waveform
-    specs = synthesizer.synthesize_spectrograms(texts, embeds)
-    spec = specs[0]
-    synthesize_state = st.text("Created the mel spectrogram")
-    generated_wav = vocoder.infer_waveform(spec)
-    generated_wav = np.pad(generated_wav, (0, synthesizer.sample_rate), mode="constant")
-    generated_wav = encoder.preprocess_wav(generated_wav)
-    synthesize_state.text("Synthesized the waveform")
+    with st.spinner("Generating your speech..."):
+        specs = synthesizer.synthesize_spectrograms(texts, embeds)
+        spec = specs[0]
+        synthesize_state = st.text("Created the mel spectrogram")
+        synthesize_state.text("Generating the waveform...")
+        mybar = st.progress(0)
+        generated_wav = vocoder.infer_waveform(spec, progress_callback=pgbar)
+        generated_wav = np.pad(
+            generated_wav, (0, synthesizer.sample_rate), mode="constant"
+        )
+        generated_wav = encoder.preprocess_wav(generated_wav)
+        synthesize_state.text("Synthesized the waveform")
+        st.success("Done!")
 
     # Save it on the disk
     filename = "demo_output_%02d.wav" % num_generated
     sf.write(filename, generated_wav.astype(np.float32), synthesizer.sample_rate)
     num_generated += 1
     synthesize_state.text("\nSaved output as %s\n\n" % filename)
+
     st.audio(read_audio(filename))
